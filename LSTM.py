@@ -102,6 +102,6 @@ y_predito = recorrente.predict(xteste_novo)
 
 y_predito.shape
 
-sns.lineplot(x = 'datas', y = yteste[:,0], data = bike[0:tamanho_teste], label = 'Teste')
-sns.lineplot(x = 'datas', y = y_predito[:,0], data = bike[0:1732], label = 'Previsao_Teste')
+sns.lineplot(x = 'datas', y = yteste[:,0], data = bike[tamanho_treino:len(bike)], label = 'Teste')
+sns.lineplot(x = 'datas', y = y_predito[:,0], data = bike[tamanho_treino + 10: len(bike)], label = 'Previsao_Teste')
 plt.xticks(rotation = 70)
