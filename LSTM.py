@@ -81,6 +81,27 @@ recorrente.add(Dense(units = 1))
 
 recorrente.compile(loss = 'mean_squared_error', optimizer = 'RMSProp')
 #optimizer = 'RMSProp' muitas vezes otimizador padrao de LSTM
-#LSTM mitiga o vanish gradient
+#optimizer = 'RMSProp' mitiga o vanish gradient
 
 recorrente.summary()
+
+resultado = recorrente.fit(xtreino_novo, ytreino_novo,
+                           validation_data = (xteste_novo, yteste_novo), epochs = 10)
+
+y_ajustado = recorrente.predict(xtreino_novo)
+
+y_ajustado = pd.DataFrame(y_ajustado)[0]
+
+y_ajustado.shape
+
+sns.lineplot(x = 'datas', y = ytreino[:,0], data = bike[0:tamanho_treino], label = 'Treino')
+sns.lineplot(x = 'datas', y = y_ajustado[:,0], data = bike[0:15662], label = 'Previsao_Treino')
+plt.xticks(rotation = 70)
+
+y_predito = recorrente.predict(xteste_novo)
+
+y_predito.shape
+
+sns.lineplot(x = 'datas', y = yteste[:,0], data = bike[0:tamanho_teste], label = 'Teste')
+sns.lineplot(x = 'datas', y = y_predito[:,0], data = bike[0:1732], label = 'Previsao_Teste')
+plt.xticks(rotation = 70)
