@@ -127,3 +127,82 @@ estabelecimentos = estabelecimentos\
   .withColumn('data_da_situacao_especial', f.to_date(estabelecimentos.data_da_situacao_especial.cast(StringType()), 'yyyyMMdd'))
 
 estabelecimentos.printSchema()
+
+empresas\
+  .select(['natureza_juridica', 'porte_da_empresa', 'capital_social_da_empresa'])\
+  .show(5, False)
+
+socios.printSchema()
+
+socios = socios\
+  .withColumn('data_de_entrada_sociedade', f.to_date(socios.data_de_entrada_sociedade.cast(StringType()), 'yyyyMMdd'))
+
+socios.printSchema()
+
+socios\
+  .select(['nome_do_socio_ou_razao_social', 'faixa_etaria', f.year('data_de_entrada_sociedade').alias('ano_de_entrada')])\
+  .show(5, False)
+
+estabelecimentos\
+  .select('nome_fantasia','municipio', f.year('data_de_inicio_atividade').alias('ano_de_inicio_atividade'),f.month('data_de_inicio_atividade').alias('mes_de_inicio_atividade'))\
+  .show(5, False)
+
+df  = spark.createDataFrame([(1,), (2,), (3,), (None,)], ['data'])
+df.toPandas()
+
+df.show(5)
+
+df  = spark.createDataFrame([(1.,), (2.,), (3.,), (float('nan'),)], ['data'])
+df.toPandas()
+
+df.show(5)
+
+df  = spark.createDataFrame([('1',), ('2',), ('3',), (None,)], ['data'])
+df.toPandas()
+
+df.show(5)
+
+socios.limit(5).toPandas()
+
+socios.limit(5).show()
+
+
+
+socios.select([f.count(f.when(f.isnull(c), 1)).alias(c) for c in socios.columns]).show(10) #conta quantos valores nulos em cada coluna
+
+socios.na.fill(0).limit(5).toPandas() #altera os valores NaN para 0
+
+socios.na.fill('-').limit(5).toPandas() #altera os valores None para '-'
+
+socios\
+  .select('nome_do_socio_ou_razao_social', 'faixa_etaria', f.year('data_de_entrada_sociedade').alias('ano_de_entrada'))\
+  .orderBy('ano_de_entrada', ascending = False)\
+  .show(5, False)
+
+socios\
+  .select('nome_do_socio_ou_razao_social', 'faixa_etaria', f.year('data_de_entrada_sociedade').alias('ano_de_entrada'))\
+  .orderBy(['ano_de_entrada', 'faixa_etaria'], ascending = [False, False])\
+  .show(5, False)
+
+empresas\
+  .where("capital_social_da_empresa==50")\
+  .show(5, False)
+
+socios\
+  .select('nome_do_socio_ou_razao_social')\
+  .filter(socios.nome_do_socio_ou_razao_social.startswith('RODRIGO'))\
+  .filter(socios.nome_do_socio_ou_razao_social.endswith('DIAS'))\
+  .limit(10)\
+  .toPandas()
+
+df = spark.createDataFrame([('RESTAURANTE DO RUI',), ('Juca restaurantes ltda',), ('Joca Restaurante',)], ['data'])
+df.toPandas()
+
+df\
+  .where(f.upper(df.data).like('%RESTAURANTE%'))\
+  .show(truncate = False)
+
+empresas\
+  .select(['razao_social_nome_empresarial', 'natureza_juridica', 'porte_da_empresa', 'capital_social_da_empresa'])\
+  .where(f.upper(empresas['razao_social_nome_empresarial']).like('%RESTAURANTE%'))\
+  .show(truncate = False)
